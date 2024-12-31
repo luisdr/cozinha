@@ -1,1 +1,66 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #333;
+        }
+        p {
+            color: #555;
+        }
+        #recipes {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cooking Recipes</h1>
+    <div id="recipes">Loading recipes...</div>
+    <script>
+        // Define the folder containing the recipes
+        const recipesFolder = 'recipes';
+
+        // Fetch the list of recipes
+        async function loadRecipes() {
+            try {
+                // Define the list of recipes manually or use an API (GitHub Pages doesn't support server-side logic)
+                const recipeFiles = ['abissinios.txt', 'aletria.txt'];
+
+                const recipesContainer = document.getElementById('recipes');
+                recipesContainer.innerHTML = ''; // Clear loading text
+
+                for (const file of recipeFiles) {
+                    // Fetch each recipe file
+                    const response = await fetch(`${recipesFolder}/${file}`);
+                    if (!response.ok) {
+                        throw new Error(`Failed to load ${file}`);
+                    }
+                    const text = await response.text();
+
+                    // Create a section for each recipe
+                    const recipeSection = document.createElement('div');
+                    recipeSection.innerHTML = `<h2>${file.replace('.txt', '')}</h2><pre>${text}</pre>`;
+                    recipesContainer.appendChild(recipeSection);
+                }
+            } catch (error) {
+                console.error('Error loading recipes:', error);
+                document.getElementById('recipes').innerHTML = 'Failed to load recipes.';
+            }
+        }
+
+        // Load recipes on page load
+        loadRecipes();
+    </script>
+</body>
+</html>
