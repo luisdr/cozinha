@@ -4,29 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipes</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 20px;
-        background-color: #f9f9f9;
-    }
-    h1, h2, h3, h4, h5, h6 {
-        color: #333;
-    }
-    p {
-        color: #555;
-    }
-    #recipes {
-        margin-top: 20px;
-    }
-    pre {
-        white-space: pre-wrap; /* Allows text to wrap */
-        word-wrap: break-word; /* Ensures long words are broken to fit */
-        overflow-wrap: break-word; /* Adds additional browser compatibility */
-    }
-</style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #333;
+        }
+        p {
+            color: #555;
+        }
+        #recipes {
+            margin-top: 20px;
+        }
+        pre {
+            white-space: pre-wrap; /* Allows text to wrap */
+            word-wrap: break-word; /* Ensures long words are broken to fit */
+            overflow-wrap: break-word; /* Adds additional browser compatibility */
+        }
+    </style>
 </head>
 <body>
     <h1>Cooking Recipes</h1>
@@ -34,43 +34,46 @@
     <script>
         async function loadRecipes() {
             try {
-                // Change these variables to your GitHub repository details
-                const repoOwner = 'luisdr';       // Replace with your GitHub username
-                const repoName = 'cozinha';       // Replace with your repository name
-                const branch = 'main';            // Replace with your branch name (usually 'main' or 'master')
-                const folderPath = 'recipes';     // Replace with the folder path where your .txt files are stored
+                const repoOwner = 'luisdr';              // Replace with your GitHub username
+                const repoName = 'cozinha';              // Replace with your repository name
+                const branch = 'main';                   // Replace with your branch name (usually 'main' or 'master')
+                const folderPath = 'recipes';            // Replace with the folder path where your .txt files are stored
 
-                // GitHub API URL to fetch folder contents
                 const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}?ref=${branch}`;
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
                     throw new Error('Failed to fetch file list from GitHub API');
                 }
 
-                // Parse the JSON response
                 const files = await response.json();
-
-                // Get the recipes container
                 const recipesContainer = document.getElementById('recipes');
                 recipesContainer.innerHTML = ''; // Clear loading text
 
-                for (const file of files) {
-                    if (file.name.endsWith('.txt')) { // Process only .txt files
-                        // Fetch the content of each recipe file
-                        const recipeResponse = await fetch(file.download_url);
-                        if (!recipeResponse.ok) {
-                            throw new Error(`Failed to load ${file.name}`);
-                        }
-                        const text = await recipeResponse.text();
+                // Create placeholders for each recipe and fetch content concurrently
+                const fetchPromises = files
+                    .filter(file => file.name.endsWith('.txt'))
+                    .map(file => {
+                        const placeholder = document.createElement('div');
+                        placeholder.id = `recipe-${file.name.replace('.txt', '')}`;
+                        placeholder.innerHTML = `<h2>${file.name.replace('.txt', '')}</h2><p>Loading...</p>`;
+                        recipesContainer.appendChild(placeholder);
 
-                        // Create a section for each recipe
-                        const recipeSection = document.createElement('div');
-                        recipeSection.innerHTML = `
-                            <h2>${file.name.replace('.txt', '')}</h2>
-                            <pre>${text}</pre>`;
-                        recipesContainer.appendChild(recipeSection);
-                    }
-                }
+                        return fetch(file.download_url)
+                            .then(res => res.text())
+                            .then(text => {
+                                // Update placeholder with recipe content
+                                placeholder.innerHTML = `
+                                    <h2>${file.name.replace('.txt', '')}</h2>
+                                    <pre>${text}</pre>`;
+                            })
+                            .catch(error => {
+                                console.error(`Failed to load ${file.name}:`, error);
+                                placeholder.innerHTML = `<h2>${file.name.replace('.txt', '')}</h2><p>Error loading recipe.</p>`;
+                            });
+                    });
+
+                // Wait for all recipes to load
+                await Promise.all(fetchPromises);
             } catch (error) {
                 console.error('Error loading recipes:', error);
                 document.getElementById('recipes').innerHTML = 'Failed to load recipes.';
