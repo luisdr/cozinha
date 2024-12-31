@@ -25,7 +25,6 @@
     </style>
 </head>
 <body>
-    <h1>Receitas</h1>
     <div id="recipes">Loading recipes...</div>
     <script>
         // Define the folder containing the recipes
@@ -50,7 +49,7 @@
 
                     // Create a section for each recipe
                     const recipeSection = document.createElement('div');
-                    recipeSection.innerHTML = `<h2>${file.replace('.txt', '')}</h2><pre>${text}</pre>`;
+                    recipeSection.innerHTML = `<h1>${file.replace('.txt', '')}</h1><pre>${text}</pre>`;
                     recipesContainer.appendChild(recipeSection);
                 }
             } catch (error) {
