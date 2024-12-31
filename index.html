@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #333;
+        }
+        p {
+            color: #555;
+        }
+        .recipe {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Recipes</h1>
+    <div id="recipes-container">
+        <!-- Recipes will be dynamically loaded here -->
+    </div>
+    <script>
+        async function fetchRecipes() {
+            try {
+                // Fetch the list of recipe files
+                const response = await fetch('recipes/');
+                const text = await response.text();
+
+                // Extract the list of files
+                const parser = new DOMParser();
+                const htmlDoc = parser.parseFromString(text, 'text/html');
+                const links = Array.from(htmlDoc.querySelectorAll('a[href$=".txt"]'));
+
+                // Container for recipes
+                const recipesContainer = document.getElementById('recipes-container');
+
+                // Loop through each file, fetch its content, and display
+                for (const link of links) {
+                    const fileName = link.getAttribute('href');
+                    const fileContent = await fetch(`recipes/${fileName}`).then(res => res.text());
+
+                    // Create a recipe element
+                    const recipeDiv = document.createElement('div');
+                    recipeDiv.classList.add('recipe');
+                    recipeDiv.innerHTML = `<h2>${fileName.replace('.txt', '')}</h2><pre>${fileContent}</pre>`;
+                    
+                    recipesContainer.appendChild(recipeDiv);
+                }
+            } catch (error) {
+                console.error('Error fetching recipes:', error);
+            }
+        }
+
+        // Load recipes on page load
+        window.onload = fetchRecipes;
+    </script>
+</body>
+</html>
