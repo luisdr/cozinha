@@ -1,7 +1,0 @@
-ingrediente1
-ing2
-ing3
-
-procedimentos 
-tirar
-fim
