@@ -36,8 +36,8 @@
         try {
             const repoOwner = 'your-github-username'; // Replace with your GitHub username
             const repoName = 'your-repo-name';        // Replace with your repository name
-            const branch = 'main';                   // Replace with your branch name (usually 'main' or 'master')
-            const folderPath = 'recipes';            // Replace with the folder path where your .txt files are stored
+            const branch = 'main';                    // Replace with your branch name (usually 'main' or 'master')
+            const folderPath = 'recipes';             // Replace with the folder path where your .txt files are stored
 
             const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}?ref=${branch}`;
             const response = await fetch(apiUrl);
