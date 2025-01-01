@@ -29,59 +29,61 @@
     </style>
 </head>
 <body>
-    <h1>Receitas</h1>
-    <div id="recipes">Loading...</div>
-    <script>
-        async function loadRecipes() {
-            try {
-                const repoOwner = 'luisdr';              // Replace with owner GitHub username
-                const repoName = 'cozinha';              // Replace with your repository name
-                const branch = 'main';                   // Replace with your branch name (usually 'main' or 'master')
-                const folderPath = 'recipes';            // Replace with the folder path where your .txt files are stored
+<h1>Cooking Recipes</h1>
+<div id="recipes">Loading recipes...</div>
+<script>
+    async function loadRecipes() {
+        try {
+            const repoOwner = 'your-github-username'; // Replace with your GitHub username
+            const repoName = 'your-repo-name';        // Replace with your repository name
+            const branch = 'main';                   // Replace with your branch name (usually 'main' or 'master')
+            const folderPath = 'recipes';            // Replace with the folder path where your .txt files are stored
 
-                const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}?ref=${branch}`;
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch file list from GitHub API');
-                }
-
-                const files = await response.json();
-                const recipesContainer = document.getElementById('recipes');
-                recipesContainer.innerHTML = ''; // Clear loading text
-
-                // Create placeholders for each recipe and fetch content concurrently
-                const fetchPromises = files
-                    .filter(file => file.name.endsWith('.txt'))
-                    .map(file => {
-                        const placeholder = document.createElement('div');
-                        placeholder.id = `recipe-${file.name.replace('.txt', '')}`;
-                        placeholder.innerHTML = `<h2>${file.name.replace('.txt', '')}</h2><p>Loading...</p>`;
-                        recipesContainer.appendChild(placeholder);
-
-                        return fetch(file.download_url)
-                            .then(res => res.text())
-                            .then(text => {
-                                // Update placeholder with recipe content
-                                placeholder.innerHTML = `
-                                    <h2>${file.name.replace('.txt', '')}</h2>
-                                    <pre>${text}</pre>`;
-                            })
-                            .catch(error => {
-                                console.error(`Failed to load ${file.name}:`, error);
-                                placeholder.innerHTML = `<h2>${file.name.replace('.txt', '')}</h2><p>Error loading recipe.</p>`;
-                            });
-                    });
-
-                // Wait for all recipes to load
-                await Promise.all(fetchPromises);
-            } catch (error) {
-                console.error('Error loading recipes:', error);
-                document.getElementById('recipes').innerHTML = 'Failed to load recipes.';
+            const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}?ref=${branch}`;
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error('Failed to fetch file list from GitHub API');
             }
-        }
 
-        // Load recipes on page load
-        loadRecipes();
-    </script>
+            // Parse the file list and sort alphabetically
+            const files = (await response.json())
+                .filter(file => file.name.endsWith('.txt')) // Only process .txt files
+                .sort((a, b) => a.name.localeCompare(b.name)); // Sort by file name
+
+            const recipesContainer = document.getElementById('recipes');
+            recipesContainer.innerHTML = ''; // Clear loading text
+
+            // Create placeholders and fetch content concurrently
+            const fetchPromises = files.map(file => {
+                const placeholder = document.createElement('div');
+                placeholder.id = `recipe-${file.name.replace('.txt', '')}`;
+                placeholder.innerHTML = `<h2>${file.name.replace('.txt', '')}</h2><p>Loading...</p>`;
+                recipesContainer.appendChild(placeholder);
+
+                return fetch(file.download_url)
+                    .then(res => res.text())
+                    .then(text => {
+                        // Update placeholder with recipe content
+                        placeholder.innerHTML = `
+                                <h2>${file.name.replace('.txt', '')}</h2>
+                                <pre>${text}</pre>`;
+                    })
+                    .catch(error => {
+                        console.error(`Failed to load ${file.name}:`, error);
+                        placeholder.innerHTML = `<h2>${file.name.replace('.txt', '')}</h2><p>Error loading recipe.</p>`;
+                    });
+            });
+
+            // Wait for all recipes to load
+            await Promise.all(fetchPromises);
+        } catch (error) {
+            console.error('Error loading recipes:', error);
+            document.getElementById('recipes').innerHTML = 'Failed to load recipes.';
+        }
+    }
+
+    // Load recipes on page load
+    loadRecipes();
+</script>
 </body>
 </html>
