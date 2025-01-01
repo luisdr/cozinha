@@ -57,7 +57,7 @@
             const fetchPromises = files.map(file => {
                 const placeholder = document.createElement('div');
                 placeholder.id = `recipe-${file.name.replace('.txt', '')}`;
-                placeholder.innerHTML = `<h1>${file.name.replace('.txt', '')}</h1><p>Loading...</p>`;
+                placeholder.innerHTML = `<h2>${file.name.replace('.txt', '')}</h2><p>Loading...</p>`;
                 recipesContainer.appendChild(placeholder);
 
                 return fetch(file.download_url)
@@ -65,12 +65,12 @@
                     .then(text => {
                         // Update placeholder with recipe content
                         placeholder.innerHTML = `
-                                <h1>${file.name.replace('.txt', '')}</h1>
+                                <h2>${file.name.replace('.txt', '')}</h2>
                                 <pre>${text}</pre>`;
                     })
                     .catch(error => {
                         console.error(`Failed to load ${file.name}:`, error);
-                        placeholder.innerHTML = `<h1>${file.name.replace('.txt', '')}</h1><p>Error loading recipe.</p>`;
+                        placeholder.innerHTML = `<h2>${file.name.replace('.txt', '')}</h2><p>Error loading recipe.</p>`;
                     });
             });
 
