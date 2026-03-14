@@ -4,86 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receitas</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Kalam&display=swap" rel="stylesheet">
+
     <style>
+
         body {
-            font-family: "French Script MT", Arial, sans-serif;
-            line-height: 1.6;
+            font-family: "Kalam", cursive;
+            line-height: 1.7;
             font-size: 18px;
             margin: 0;
-            padding: 20px;
-            background-color: #f9f9f9;
+            padding: 30px;
+            background-color: #fdfaf3;
         }
-        h1, h2, h3, h4, h5, h6 {
+
+        /* Page title */
+        .page-title {
+            text-align: center;
+            font-family: "Playfair Display", serif;
+            font-size: 48px;
+            color: #5a3e2b;
+            margin-bottom: 40px;
+        }
+
+        /* Recipe container */
+        #recipes {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        /* Recipe card */
+        #recipes > div {
+            background: #fffdf7;
+            border: 1px solid #e6dccb;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        }
+
+        /* Recipe titles */
+        h1 {
+            font-family: "Playfair Display", serif;
+            font-size: 34px;
+            margin-top: 0;
+            color: #5a3e2b;
+            border-bottom: 2px solid #e6dccb;
+            padding-bottom: 8px;
+        }
+
+        /* Recipe text */
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-family: "Kalam", cursive;
+            font-size: 18px;
             color: #333;
         }
-        p {
-            color: #555;
+
+        /* subtle paper texture */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 6px 6px;
+            pointer-events: none;
         }
-        #recipes {
-            margin-top: 20px;
-        }
-        pre {
-            white-space: pre-wrap; /* Allows text to wrap */
-            word-wrap: break-word; /* Ensures long words are broken to fit */
-            overflow-wrap: break-word; /* Adds additional browser compatibility */
-        }
+
     </style>
 </head>
+
 <body>
+
+<div class="page-title">📖 Livro de Receitas</div>
+
 <div id="recipes">Loading recipes...</div>
+
 <script>
+
     async function loadRecipes() {
         try {
-            const repoOwner = 'luisdr'; // Replace with your GitHub username
-            const repoName = 'cozinha';        // Replace with your repository name
-            const branch = 'main';                   // Replace with your branch name (usually 'main' or 'master')
-            const folderPath = 'recipes';            // Replace with the folder path where your .txt files are stored
+
+            const repoOwner = 'luisdr';
+            const repoName = 'cozinha';
+            const branch = 'main';
+            const folderPath = 'recipes';
 
             const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}?ref=${branch}`;
+
             const response = await fetch(apiUrl);
+
             if (!response.ok) {
                 throw new Error('Failed to fetch file list from GitHub API');
             }
 
-            // Parse the file list and sort alphabetically
             const files = (await response.json())
-                .filter(file => file.name.endsWith('.txt')) // Only process .txt files
-                .sort((a, b) => a.name.localeCompare(b.name)); // Sort by file name
+                .filter(file => file.name.endsWith('.txt'))
+                .sort((a, b) => a.name.localeCompare(b.name));
 
             const recipesContainer = document.getElementById('recipes');
-            recipesContainer.innerHTML = ''; // Clear loading text
+            recipesContainer.innerHTML = '';
 
-            // Create placeholders and fetch content concurrently
             const fetchPromises = files.map(file => {
+
                 const placeholder = document.createElement('div');
-                placeholder.id = `recipe-${file.name.replace('.txt', '')}`;
-                placeholder.innerHTML = `<h1>${file.name.replace('.txt', '')}</h1><p>Loading...</p>`;
+
+                const recipeName = file.name.replace('.txt', '');
+
+                placeholder.id = `recipe-${recipeName}`;
+
+                placeholder.innerHTML = `
+                <h1>${recipeName}</h1>
+                <p>Loading...</p>
+            `;
+
                 recipesContainer.appendChild(placeholder);
 
                 return fetch(file.download_url)
                     .then(res => res.text())
                     .then(text => {
-                        // Update placeholder with recipe content
+
                         placeholder.innerHTML = `
-                                <h1>${file.name.replace('.txt', '')}</h1>
-                                <pre>${text}</pre>`;
+                        <h1>${recipeName}</h1>
+                        <pre>${text}</pre>
+                    `;
+
                     })
                     .catch(error => {
+
                         console.error(`Failed to load ${file.name}:`, error);
-                        placeholder.innerHTML = `<h1>${file.name.replace('.txt', '')}</h1><p>Error loading recipe.</p>`;
+
+                        placeholder.innerHTML = `
+                        <h1>${recipeName}</h1>
+                        <p>Error loading recipe.</p>
+                    `;
                     });
+
             });
 
-            // Wait for all recipes to load
             await Promise.all(fetchPromises);
+
         } catch (error) {
+
             console.error('Error loading recipes:', error);
+
             document.getElementById('recipes').innerHTML = 'Failed to load recipes.';
         }
     }
 
-    // Load recipes on page load
     loadRecipes();
+
 </script>
+
 </body>
 </html>
