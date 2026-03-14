@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receitas</title>
+    <title>As Minhas Receitas</title>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Kalam&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
 
         body {
-            font-family: "Kalam", cursive;
+            font-family: Georgia, serif;
             line-height: 1.7;
             font-size: 18px;
             margin: 0;
@@ -19,11 +18,11 @@
             background-color: #fdfaf3;
         }
 
-        /* Page title */
+        /* Main title */
         .page-title {
             text-align: center;
-            font-family: "Playfair Display", serif;
-            font-size: 48px;
+            font-family: "Kalam", cursive;
+            font-size: 56px;
             color: #5a3e2b;
             margin-bottom: 40px;
         }
@@ -46,8 +45,8 @@
 
         /* Recipe titles */
         h1 {
-            font-family: "Playfair Display", serif;
-            font-size: 34px;
+            font-family: "Kalam", cursive;
+            font-size: 36px;
             margin-top: 0;
             color: #5a3e2b;
             border-bottom: 2px solid #e6dccb;
@@ -59,7 +58,7 @@
             white-space: pre-wrap;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            font-family: "Kalam", cursive;
+            font-family: Georgia, serif;
             font-size: 18px;
             color: #333;
         }
@@ -111,7 +110,6 @@
             const fetchPromises = files.map(file => {
 
                 const placeholder = document.createElement('div');
-
                 const recipeName = file.name.replace('.txt', '');
 
                 placeholder.id = `recipe-${recipeName}`;
