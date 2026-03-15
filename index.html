@@ -6,14 +6,16 @@
     <title>Receitas</title>
     <style>
         @font-face {
-            font-family: 'French Script MT';
-            src: url('fonts/FrenchScriptMT.otf') format('opentype');
+            font-family: 'FrenchScriptMT';
+            src: url('fonts/OPTIFrench-Script.woff2') format('woff2'),
+            url('fonts/OPTIFrench-Script.woff') format('woff'),
+            url('fonts/OPTIFrench-Script.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
         }
 
         * {
-            font-family: "French Script MT", Arial, sans-serif;
+            font-family: "FrenchScriptMT", Arial, sans-serif;
         }
 
         body {
@@ -37,7 +39,7 @@
         }
 
         pre {
-            font-family: "French Script MT", Arial, sans-serif;
+            font-family: "FrenchScriptMT", Arial, sans-serif;
             white-space: pre-wrap;
             word-wrap: break-word;
             overflow-wrap: break-word;
@@ -49,10 +51,10 @@
 <script>
     async function loadRecipes() {
         try {
-            const repoOwner = 'luisdr'; // Replace with your GitHub username
-            const repoName = 'cozinha';        // Replace with your repository name
-            const branch = 'main';                   // Replace with your branch name (usually 'main' or 'master')
-            const folderPath = 'recipes';            // Replace with the folder path where your .txt files are stored
+            const repoOwner = 'luisdr';         // GitHub username
+            const repoName = 'cozinha';         // Repository name
+            const branch = 'main';              // Branch name
+            const folderPath = 'recipes';       // Folder with .txt files
 
             const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}?ref=${branch}`;
             const response = await fetch(apiUrl);
