@@ -64,8 +64,8 @@
 
             // Parse the file list and sort alphabetically
             const files = (await response.json())
-                .filter(file => file.name.endsWith('.txt')) // Only process .txt files
-                .sort((a, b) => a.name.localeCompare(b.name)); // Sort by file name
+                .filter(file => file.name.endsWith('.txt'))     // Only process .txt files
+                .sort((a, b) => a.name.localeCompare(b.name));  // Sort by file name
 
             const recipesContainer = document.getElementById('recipes');
             recipesContainer.innerHTML = ''; // Clear loading text
